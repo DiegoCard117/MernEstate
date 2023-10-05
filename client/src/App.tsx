@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom"
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
 import SignIn from "./pages/SignIn";
-import SignOut from "./pages/SignOut";
+import SignUp from "./pages/SignUp";
 import Header from "./components/Header";
 function App() {
   return (
@@ -11,8 +11,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/about" element={<Home/>}/>
-        <Route path="/signIn" element={<SignIn/>}/>
-        <Route path="/signOut" element={<SignOut/>}/>
+        <Route path="/sign-in" element={<SignIn/>}/>
+        <Route path="/sign-up" element={<SignUp/>}/>
         <Route path="/profile" element={<Profile/>}/>
       </Routes>
     </BrowserRouter>
