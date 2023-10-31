@@ -7,11 +7,12 @@ import { useDispatch } from "react-redux";
 
 export default function Profile() {
   const fileRef = useRef(null);
-  const { currentUser } = useSelector(state => state.user);
+  const { currentUser, loading, error } = useSelector(state => state.user);
   const [file, setFile] = useState(undefined);
   const [filePercentage, setPercentage] = useState(0);
   const [fileError, setFileError] = useState(false);
   const [formData, setFormData] = useState({});
+  const [success, setSuccess] = useState(false)
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -63,6 +64,7 @@ export default function Profile() {
         return;
       }
       dispatch(updateUserSuccess(data));
+      setSuccess(true)
     } catch (error) {
       dispatch(updateUserFailure(error.message));
     }
@@ -108,17 +110,23 @@ export default function Profile() {
             onChange={handleChange}
           />
           <input className="border p-3 rounded-lg"
-            type="text"
+            type="password"
             placeholder="password"
             id="password"
             onChange={handleChange}
           />
-          <button className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">update</button>
+          <button
+            disabled={loading}
+            className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
+              {loading ? 'Loading...' : 'update'}
+          </button>
         </form>
         <div className="flex justify-between mt-5">
           <span className="text-red-700 cursor-pointer">Delete Account</span>
           <span className="text-red-700 cursor-pointer">SignOut</span>
         </div>
+          <p className="text-red-700 mt-5">{error ? error : ''}</p>
+          <p className="text-green-700 mt-5">{success ? 'User update successfully' : ''}</p>
       </div>
     </>
   );
