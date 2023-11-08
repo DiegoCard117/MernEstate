@@ -52,12 +52,15 @@ export const google = async (request, response, next) => {
           Math.random().toString(36).slice(-4),
         email: request.body.email,
         password: hashedPassword,
-        avatar: request.body.photo
+        avatar: request.body.photo,
       });
-      await newUser.save()
-      const token = jwt.sign({id: newUser._id}, process.env.JWT_SECRET)
+      await newUser.save();
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
       const { password: pass, ...rest } = newUser._doc;
-      response.cookie('access_token', token, {httpOnly: true}).status(200).json(rest)
+      response
+        .cookie("access_token", token, { httpOnly: true })
+        .status(200)
+        .json(rest);
     }
   } catch (err) {
     next(err);

@@ -1,6 +1,6 @@
 import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
-import { errorHandler } from '../utils/error.js';
+import { errorHandler } from "../utils/error.js";
 
 export const test = (_request, response) => {
   response.json({
@@ -29,10 +29,22 @@ export const updateUser = async (request, response, next) => {
       { new: true }
     );
 
-    const {password, ...rest} = updatedUser._doc
+    const { password, ...rest } = updatedUser._doc;
 
-    response.status(200).json(rest)
+    response.status(200).json(rest);
   } catch (error) {
     next(error);
+  }
+};
+
+export const deleteUser = async (request, response, next) => {
+  if (request.user.id !== request.params.id)
+    return next(errorHandler(401, "You can only delete your own account"));
+  try {
+    await User.findByIdAndDelete(request.params.id);
+    response.clearCookie("access_token");
+    response.status(200).json("User has been delete");
+  } catch (err) {
+    next(err);
   }
 };

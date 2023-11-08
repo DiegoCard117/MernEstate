@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { useRef, useState, useEffect } from "react";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';
-import { updateUserStart, updateUserFailure, updateUserSuccess } from "../redux/user/userSlice";
+import { updateUserStart, updateUserFailure, updateUserSuccess, deleteUserFailure, deleteUserStart, deleteUserSuccess } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 
 export default function Profile() {
@@ -12,7 +12,7 @@ export default function Profile() {
   const [filePercentage, setPercentage] = useState(0);
   const [fileError, setFileError] = useState(false);
   const [formData, setFormData] = useState({});
-  const [success, setSuccess] = useState(false)
+  const [success, setSuccess] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-        const res = await fetch(`/api/user/update/${currentUser._id}`, {
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -64,9 +64,27 @@ export default function Profile() {
         return;
       }
       dispatch(updateUserSuccess(data));
-      setSuccess(true)
-    } catch (error) {
-      dispatch(updateUserFailure(error.message));
+      setSuccess(true);
+    } catch (err) {
+      dispatch(updateUserFailure(err.message));
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const response = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: 'DELETE'
+      });
+      const data = await response.json();
+      if (data.success === false) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+
+    } catch (err) {
+      dispatch(deleteUserFailure(err.message));
     }
   };
 
@@ -118,15 +136,15 @@ export default function Profile() {
           <button
             disabled={loading}
             className="bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80">
-              {loading ? 'Loading...' : 'update'}
+            {loading ? 'Loading...' : 'update'}
           </button>
         </form>
         <div className="flex justify-between mt-5">
-          <span className="text-red-700 cursor-pointer">Delete Account</span>
+          <span onClick={handleDeleteUser} className="text-red-700 cursor-pointer">Delete Account</span>
           <span className="text-red-700 cursor-pointer">SignOut</span>
         </div>
-          <p className="text-red-700 mt-5">{error ? error : ''}</p>
-          <p className="text-green-700 mt-5">{success ? 'User update successfully' : ''}</p>
+        <p className="text-red-700 mt-5">{error ? error : ''}</p>
+        <p className="text-green-700 mt-5">{success ? 'User update successfully' : ''}</p>
       </div>
     </>
   );
